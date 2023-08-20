@@ -34,6 +34,28 @@ class CreateUI(bpy.types.Operator):
         active_object[StoreData.Hairs.value] = context.scene.HairsGroup
         active_object[StoreData.Outfit.value] = context.scene.OutfitGroup
 
+        # Add drivers for hair objects
+        Hairs = context.scene.HairsGroup
+
+        for group in Hairs.children:
+            if (group.get('isHide') == None):
+                group['isHide'] = 0
+            for child in group.children:
+                hide_viewport = child.driver_add("hide_viewport")
+                hide_render = child.driver_add("hide_render")
+
+                hide_viewport.driver.variables.new()
+                hide_viewport.driver.expression = "var"
+                var = hide_viewport.driver.variables.get("var")
+                var.targets[0].id = group
+                var.targets[0].data_path = '[\"isHide\"]'
+
+                hide_render.driver.variables.new()
+                hide_render.driver.expression = "var"
+                var = hide_render.driver.variables.get("var")
+                var.targets[0].id = group
+                var.targets[0].data_path = '[\"isHide\"]'
+
         return {'FINISHED'}
 
 
@@ -44,6 +66,14 @@ class DeleteUI(bpy.types.Operator):
 
     def execute(self, context):
         active_object = context.active_object
+
+        # Delete drivers for hair objects
+        Hairs = active_object[StoreData.Hairs.value]
+
+        for group in Hairs.children:
+            for child in group.children:
+                child.driver_remove("hide_viewport")
+                child.driver_remove("hide_render")
 
         if "Name" in active_object:
             del active_object[StoreData.Name.value]
@@ -59,11 +89,10 @@ class DeleteUI(bpy.types.Operator):
 
 class SettingsTab(bpy.types.Panel):
     bl_label = "Character UI - Settings"
-    bl_idname = "A"
+    bl_idname = "TWEAKS_PT_4"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
-    bl_order = 10
 
     def draw(self, context):
         layout = self.layout
@@ -101,64 +130,90 @@ class SettingsTab(bpy.types.Panel):
 
 class BodyTweaks(bpy.types.Panel):
     bl_label = "Character UI - Body Tweaks"
-    bl_idname = "B"
+    bl_idname = "TWEAKS_PT_3"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
-    bl_order = 5
 
     def draw(self, context):
         layout = self.layout
 
         active_object = context.active_object
-        Body = active_object.get(StoreData.Body.value)
+        if (active_object):
+            if (active_object.get(StoreData.Name.value)):
+                Body = active_object.get(StoreData.Body.value)
 
-        for mod in Body.modifiers:
-            box = layout.box()
-            row = box.row()
-            row.label(text=mod.name)
-            row.prop(mod, "show_viewport")
-            row.prop(mod, "show_render")
-            if (mod.type == "SUBSURF"):
-                row = box.row()
-                row.prop(mod, "levels", text="Viewport")
-                row.prop(mod, "render_levels", text="Render")
+                for mod in Body.modifiers:
+                    box = layout.box()
+                    row = box.row()
+                    row.label(text=mod.name)
+                    row.prop(mod, "show_viewport")
+                    row.prop(mod, "show_render")
+                    if (mod.type == "SUBSURF"):
+                        row = box.row()
+                        row.prop(mod, "levels", text="Viewport")
+                        row.prop(mod, "render_levels", text="Render")
 
 
 class OutfitTweaks(bpy.types.Panel):
     bl_label = "Character UI - Outfit Tweaks"
-    bl_idname = "C"
+    bl_idname = "TWEAKS_PT_2"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
-    bl_order = 5
 
     def draw(self, context):
         layout = self.layout
 
         active_object = context.active_object
-        Outfit = active_object.get(StoreData.Outfit.value)
 
-        for group in Outfit.children:
-            box = layout.box()
-            box.label(text=group.name)
-            for child in group.children:
-                row = box.row()
-                row.label(text=child.name)
-                row.prop(child, "hide_viewport",
-                         text="Viewport", invert_checkbox=True)
-                row.prop(child, "hide_render",
-                         text="Render", invert_checkbox=True)
+        if (active_object):
+            if (active_object.get(StoreData.Name.value)):
+                Outfit = active_object.get(StoreData.Outfit.value)
+
+                for group in Outfit.children:
+                    box = layout.box()
+                    box.label(text=group.name)
+                    for child in group.children:
+                        row = box.row()
+                        row.label(text=child.name)
+                        row.prop(child, "hide_viewport",
+                                 text="Viewport", invert_checkbox=True)
+                        row.prop(child, "hide_render",
+                                 text="Render", invert_checkbox=True)
+
+
+class HairsTweaks(bpy.types.Panel):
+    bl_label = "Character UI - Hairs Tweaks"
+    bl_idname = "TWEAKS_PT_1"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "CharacterUI"
+
+    def draw(self, context):
+        layout = self.layout
+
+        active_object = context.active_object
+
+        if (active_object):
+            if (active_object.get(StoreData.Name.value)):
+                hairs = active_object.get(StoreData.Hairs.value)
+
+                for group in hairs.children:
+                    box = layout.box()
+                    row = box.row()
+                    row.label(text=group.name)
+                    row.prop(group, '[\"isHide\"]',
+                             text="Hide", toggle=1)
 
 
 class InfoTab(bpy.types.Panel):
     bl_label = "Character UI - Info"
-    bl_idname = "Info_Tab"
+    bl_idname = "INFO_TAB_PT_info_tab"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_order = 0
 
     def draw(self, context):
         layout = self.layout
@@ -173,13 +228,15 @@ class InfoTab(bpy.types.Panel):
         box.operator(
             "wm.url_open", text="Source Code").url = "https://github.com/maqq1e/DynamicBlenderCharacterUI"
 
-        if (active_object.get(StoreData.Name.value)):
-            box = layout.box()
-            box.operator("object.delete_ui", icon="BACK")
+        if (active_object):
+            if (active_object.get(StoreData.Name.value)):
+                box = layout.box()
+                box.operator("object.delete_ui", icon="BACK")
 
 
 UsesClasses = [
     InfoTab,
+    HairsTweaks,
     OutfitTweaks,
     BodyTweaks,
     SettingsTab,
