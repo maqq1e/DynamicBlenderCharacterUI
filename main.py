@@ -89,7 +89,7 @@ class DeleteUI(bpy.types.Operator):
 
 class SettingsTab(bpy.types.Panel):
     bl_label = "Character UI - Settings"
-    bl_idname = "TWEAKS_PT_4"
+    bl_idname = "OBJECT_PT_first_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
@@ -130,7 +130,7 @@ class SettingsTab(bpy.types.Panel):
 
 class BodyTweaks(bpy.types.Panel):
     bl_label = "Character UI - Body Tweaks"
-    bl_idname = "TWEAKS_PT_3"
+    bl_idname = "OBJECT_PT_second_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
@@ -157,7 +157,7 @@ class BodyTweaks(bpy.types.Panel):
 
 class OutfitTweaks(bpy.types.Panel):
     bl_label = "Character UI - Outfit Tweaks"
-    bl_idname = "TWEAKS_PT_2"
+    bl_idname = "OBJECT_PT_third_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
@@ -185,7 +185,7 @@ class OutfitTweaks(bpy.types.Panel):
 
 class HairsTweaks(bpy.types.Panel):
     bl_label = "Character UI - Hairs Tweaks"
-    bl_idname = "TWEAKS_PT_1"
+    bl_idname = "OBJECT_PT_forth_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
@@ -209,7 +209,7 @@ class HairsTweaks(bpy.types.Panel):
 
 class InfoTab(bpy.types.Panel):
     bl_label = "Character UI - Info"
-    bl_idname = "INFO_TAB_PT_info_tab"
+    bl_idname = "OBJECT_PT_fifth_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
@@ -223,10 +223,10 @@ class InfoTab(bpy.types.Panel):
         box = layout.box()
 
         box.label(
-            text='Version: 0.0.1', icon="BLENDER")
+            text='Version: 0.1.3', icon="BLENDER")
 
         box.operator(
-            "wm.url_open", text="Source Code").url = "https://github.com/maqq1e/DynamicBlenderCharacterUI"
+            "wm.url_open", text="Source Code and Docs", icon="DOCUMENTS").url = "https://github.com/maqq1e/DynamicBlenderCharacterUI"
 
         if (active_object):
             if (active_object.get(StoreData.Name.value)):
@@ -235,11 +235,11 @@ class InfoTab(bpy.types.Panel):
 
 
 UsesClasses = [
-    InfoTab,
-    HairsTweaks,
-    OutfitTweaks,
-    BodyTweaks,
     SettingsTab,
+    BodyTweaks,
+    OutfitTweaks,
+    HairsTweaks,
+    InfoTab,
     DeleteUI,
     CreateUI,
     AutoFillGroups,

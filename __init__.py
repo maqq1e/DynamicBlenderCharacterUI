@@ -7,7 +7,7 @@ bl_info = {
     "author": "daniel.hovach@gmail.com",
     "description": "Simply create UI for your characters",
     "blender": (3, 5, 0),
-    "version": (0, 1, 2),
+    "version": (0, 1, 3),
 }
 
 
@@ -15,13 +15,26 @@ bl_info = {
 def register():
     UsesProps()
 
-    for useClass in UsesClasses:
-        bpy.utils.register_class(useClass)
+    bpy.utils.register_class(UsesClasses[0])
+    bpy.utils.register_class(UsesClasses[1])
+    bpy.utils.register_class(UsesClasses[2])
+    bpy.utils.register_class(UsesClasses[3])
+    bpy.utils.register_class(UsesClasses[4])
+    bpy.utils.register_class(UsesClasses[5])
+    bpy.utils.register_class(UsesClasses[6])
+    bpy.utils.register_class(UsesClasses[7])
 
 
 def unregister():
-    for useClass in UsesClasses:
-        bpy.utils.unregister_class(useClass)
+
+    bpy.utils.unregister_class(UsesClasses[0])
+    bpy.utils.unregister_class(UsesClasses[1])
+    bpy.utils.unregister_class(UsesClasses[2])
+    bpy.utils.unregister_class(UsesClasses[3])
+    bpy.utils.unregister_class(UsesClasses[4])
+    bpy.utils.unregister_class(UsesClasses[5])
+    bpy.utils.unregister_class(UsesClasses[6])
+    bpy.utils.unregister_class(UsesClasses[7])
 
 
 if __name__ == "__main__":
