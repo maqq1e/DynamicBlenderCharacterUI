@@ -30,8 +30,8 @@ class CreateUI(bpy.types.Operator):
 
         active_object['Name'] = active_object.name
         active_object['Body'] = context.scene.BodyGroup
-        active_object['Hairs'] = context.scene.BodyGroup
-        active_object['Outfit'] = context.scene.BodyGroup
+        active_object['Hairs'] = context.scene.HairsGroup
+        active_object['Outfit'] = context.scene.OutfitGroup
 
         return {'FINISHED'}
 
@@ -71,20 +71,9 @@ class SettingsTab(bpy.types.Panel):
             if (active_object.get("Name")):
                 if (active_object.type == "ARMATURE"):
 
-                    HairsGroup = context.scene.HairsGroup
-                    OutfitGroup = context.scene.OutfitGroup
-
-                    # Get already existed settings
-                    settings = active_object
-
                     box = layout.box()
 
-                    box.prop(settings, "name", text="Name")
-
-                    box = layout.box()
-
-                    box.operator("object.delete_ui", icon="BACK")
-
+                    box.prop(active_object, "name", text="Name")
 
                 else:
                     box = layout.box()
@@ -118,6 +107,8 @@ class InfoTab(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
+        active_object = context.active_object
+
         box = layout.box()
 
         box.label(
@@ -125,6 +116,10 @@ class InfoTab(bpy.types.Panel):
 
         box.operator(
             "wm.url_open", text="Source Code").url = "https://github.com/maqq1e/DynamicBlenderCharacterUI"
+
+        if (active_object.get("Name")):
+            box = layout.box()
+            box.operator("object.delete_ui", icon="BACK")
 
 
 UsesClasses = [
