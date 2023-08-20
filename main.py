@@ -1,4 +1,5 @@
 import bpy
+from .gVariables import StoreData
 
 
 class AutoFillGroups(bpy.types.Operator):
@@ -10,11 +11,11 @@ class AutoFillGroups(bpy.types.Operator):
         active_object = context.active_object
 
         for child in active_object.children:
-            if (child.name == "Hairs"):
+            if (child.name == StoreData.Hairs.value):
                 context.scene.HairsGroup = child
-            if (child.name == "Outfit"):
+            if (child.name == StoreData.Outfit.value):
                 context.scene.OutfitGroup = child
-            if ("Body" in child.name):
+            if (StoreData.Body.value in child.name):
                 context.scene.BodyGroup = child
 
         return {'FINISHED'}
@@ -28,10 +29,10 @@ class CreateUI(bpy.types.Operator):
     def execute(self, context):
         active_object = context.active_object
 
-        active_object['Name'] = active_object.name
-        active_object['Body'] = context.scene.BodyGroup
-        active_object['Hairs'] = context.scene.HairsGroup
-        active_object['Outfit'] = context.scene.OutfitGroup
+        active_object[StoreData.Name.value] = active_object.name
+        active_object[StoreData.Body.value] = context.scene.BodyGroup
+        active_object[StoreData.Hairs.value] = context.scene.HairsGroup
+        active_object[StoreData.Outfit.value] = context.scene.OutfitGroup
 
         return {'FINISHED'}
 
@@ -45,30 +46,31 @@ class DeleteUI(bpy.types.Operator):
         active_object = context.active_object
 
         if "Name" in active_object:
-            del active_object["Name"]
+            del active_object[StoreData.Name.value]
         if "Body" in active_object:
-            del active_object["Body"]
+            del active_object[StoreData.Body.value]
         if "Hairs" in active_object:
-            del active_object["Hairs"]
+            del active_object[StoreData.Hairs.value]
         if "Outfit" in active_object:
-            del active_object["Outfit"]
+            del active_object[StoreData.Outfit.value]
 
         return {'FINISHED'}
 
 
 class SettingsTab(bpy.types.Panel):
     bl_label = "Character UI - Settings"
-    bl_idname = "OBJECT_PT_character_ui_settings"
+    bl_idname = "A"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
+    bl_order = 10
 
     def draw(self, context):
         layout = self.layout
 
         active_object = context.active_object
         if (active_object):
-            if (active_object.get("Name")):
+            if (active_object.get(StoreData.Name.value)):
                 if (active_object.type == "ARMATURE"):
 
                     box = layout.box()
@@ -97,12 +99,40 @@ class SettingsTab(bpy.types.Panel):
                     box.operator("object.create_ui", icon="FORWARD")
 
 
-class InfoTab(bpy.types.Panel):
-    bl_label = "Character UI - Info"
-    bl_idname = "OBJECT_PT_character_ui_info"
+class BodyTweaks(bpy.types.Panel):
+    bl_label = "Character UI - Body Tweaks"
+    bl_idname = "C"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
+    bl_order = 5
+
+    def draw(self, context):
+        layout = self.layout
+
+        active_object = context.active_object
+        Body = active_object.get(StoreData.Body.value)
+
+        for mod in Body.modifiers:
+            box = layout.box()
+            row = box.row()
+            row.label(text=mod.name)
+            row.prop(mod, "show_viewport")
+            row.prop(mod, "show_render")
+            if (mod.type == "SUBSURF"):
+                row = box.row()
+                row.prop(mod, "levels", text="Viewport")
+                row.prop(mod, "render_levels", text="Render")
+
+
+class InfoTab(bpy.types.Panel):
+    bl_label = "Character UI - Info"
+    bl_idname = "Info_Tab"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "CharacterUI"
+    bl_options = {'DEFAULT_CLOSED'}
+    bl_order = 0
 
     def draw(self, context):
         layout = self.layout
@@ -117,17 +147,18 @@ class InfoTab(bpy.types.Panel):
         box.operator(
             "wm.url_open", text="Source Code").url = "https://github.com/maqq1e/DynamicBlenderCharacterUI"
 
-        if (active_object.get("Name")):
+        if (active_object.get(StoreData.Name.value)):
             box = layout.box()
             box.operator("object.delete_ui", icon="BACK")
 
 
 UsesClasses = [
+    InfoTab,
+    BodyTweaks,
+    SettingsTab,
     DeleteUI,
     CreateUI,
     AutoFillGroups,
-    SettingsTab,
-    InfoTab,
 ]
 
 

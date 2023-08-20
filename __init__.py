@@ -7,7 +7,7 @@ bl_info = {
     "author": "daniel.hovach@gmail.com",
     "description": "Simply create UI for your characters",
     "blender": (3, 5, 0),
-    "version": (0, 0, 2),
+    "version": (0, 0, 5),
 }
 
 
