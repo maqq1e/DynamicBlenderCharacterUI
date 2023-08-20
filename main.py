@@ -101,7 +101,7 @@ class SettingsTab(bpy.types.Panel):
 
 class BodyTweaks(bpy.types.Panel):
     bl_label = "Character UI - Body Tweaks"
-    bl_idname = "C"
+    bl_idname = "B"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "CharacterUI"
@@ -123,6 +123,32 @@ class BodyTweaks(bpy.types.Panel):
                 row = box.row()
                 row.prop(mod, "levels", text="Viewport")
                 row.prop(mod, "render_levels", text="Render")
+
+
+class OutfitTweaks(bpy.types.Panel):
+    bl_label = "Character UI - Outfit Tweaks"
+    bl_idname = "C"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "CharacterUI"
+    bl_order = 5
+
+    def draw(self, context):
+        layout = self.layout
+
+        active_object = context.active_object
+        Outfit = active_object.get(StoreData.Outfit.value)
+
+        for group in Outfit.children:
+            box = layout.box()
+            box.label(text=group.name)
+            for child in group.children:
+                row = box.row()
+                row.label(text=child.name)
+                row.prop(child, "hide_viewport",
+                         text="Viewport", invert_checkbox=True)
+                row.prop(child, "hide_render",
+                         text="Render", invert_checkbox=True)
 
 
 class InfoTab(bpy.types.Panel):
@@ -154,6 +180,7 @@ class InfoTab(bpy.types.Panel):
 
 UsesClasses = [
     InfoTab,
+    OutfitTweaks,
     BodyTweaks,
     SettingsTab,
     DeleteUI,
