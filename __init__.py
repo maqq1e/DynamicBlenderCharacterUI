@@ -1,5 +1,5 @@
 import bpy
-from .main import UsesClasses, UsesProps
+from .main import *
 
 # Addon Info
 bl_info = {
@@ -7,7 +7,7 @@ bl_info = {
     "author": "daniel.hovach@gmail.com",
     "description": "Simply create UI for your characters",
     "blender": (3, 5, 0),
-    "version": (0, 1, 3),
+    "version": (0, 2, 1),
 }
 
 
@@ -15,26 +15,28 @@ bl_info = {
 def register():
     UsesProps()
 
-    bpy.utils.register_class(UsesClasses[0])
-    bpy.utils.register_class(UsesClasses[1])
-    bpy.utils.register_class(UsesClasses[2])
-    bpy.utils.register_class(UsesClasses[3])
-    bpy.utils.register_class(UsesClasses[4])
-    bpy.utils.register_class(UsesClasses[5])
-    bpy.utils.register_class(UsesClasses[6])
-    bpy.utils.register_class(UsesClasses[7])
+    bpy.utils.register_class(SettingsTab)
+    bpy.utils.register_class(BodyTweaks)
+    bpy.utils.register_class(OutfitTweaks)
+    bpy.utils.register_class(HairsTweaks)
+    bpy.utils.register_class(CustomTweaks)
+    bpy.utils.register_class(InfoTab)
+
+    for useClass in UsesClasses:
+        bpy.utils.register_class(useClass)
 
 
 def unregister():
 
-    bpy.utils.unregister_class(UsesClasses[0])
-    bpy.utils.unregister_class(UsesClasses[1])
-    bpy.utils.unregister_class(UsesClasses[2])
-    bpy.utils.unregister_class(UsesClasses[3])
-    bpy.utils.unregister_class(UsesClasses[4])
-    bpy.utils.unregister_class(UsesClasses[5])
-    bpy.utils.unregister_class(UsesClasses[6])
-    bpy.utils.unregister_class(UsesClasses[7])
+    bpy.utils.unregister_class(SettingsTab)
+    bpy.utils.unregister_class(BodyTweaks)
+    bpy.utils.unregister_class(OutfitTweaks)
+    bpy.utils.unregister_class(HairsTweaks)
+    bpy.utils.unregister_class(CustomTweaks)
+    bpy.utils.unregister_class(InfoTab)
+
+    for useClass in UsesClasses:
+        bpy.utils.unregister_class(useClass)
 
 
 if __name__ == "__main__":

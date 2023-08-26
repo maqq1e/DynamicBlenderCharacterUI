@@ -87,6 +87,21 @@ class DeleteUI(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class AddProperty(bpy.types.Operator):
+    """Add Object Property"""
+    bl_idname = "object.add_property"
+    bl_label = "Add Property"
+
+    def execute(self, context):
+        active_object = context.active_object
+
+        if (active_object.get(context.scene.NameProperty) == None):
+            active_object[context.scene.NameProperty + "_P"] = 0
+
+        context.scene.NameProperty = ""
+        return {'FINISHED'}
+
+
 class SettingsTab(bpy.types.Panel):
     bl_label = "Character UI - Settings"
     bl_idname = "OBJECT_PT_first_panel"
@@ -207,6 +222,55 @@ class HairsTweaks(bpy.types.Panel):
                              text="Hide", toggle=1)
 
 
+class CustomTweaks(bpy.types.Panel):
+    bl_label = "Character UI - Custom Tweaks"
+    bl_idname = "OBJECT_PT_custom_panel"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "CharacterUI"
+
+    def draw(self, context):
+        layout = self.layout
+
+        active_object = context.active_object
+
+        if (active_object):
+            layout.label(text="Create you own custom properties")
+            # Get all object custom properties
+            index = 0
+            for k in active_object.keys():
+                if (index == 0):
+                    index = 1
+                    continue
+                if ("_P" not in k):
+                    continue
+                box = layout.box()
+                row = box.row()
+                row.prop(active_object, '[\"' + k + '\"]', toggle=1)
+                # Create a button that opens the property editing popup
+                op = row.operator("wm.properties_edit",
+                                  text="", icon='SETTINGS')
+                op.data_path = 'active_object'
+                op.property_name = k
+
+            box = layout.box()
+            box.label(text="Create new Property")
+            row = box.row()
+            row.prop(context.scene, "NameProperty", text="Property Name")
+
+            if (active_object.get(context.scene.NameProperty + "_P") == None):
+                if (context.scene.NameProperty != ""):
+                    box.operator("object.add_property", icon="ADD")
+                else:
+                    box.label(text="You need to set the name!", icon="ERROR")
+
+            else:
+                box.label(text="You need to make unique name!", icon="ERROR")
+
+            box.label(
+                text="You property must contain '_P' postfix. This postfix will add automaticly.", icon="QUESTION")
+
+
 class InfoTab(bpy.types.Panel):
     bl_label = "Character UI - Info"
     bl_idname = "OBJECT_PT_fifth_panel"
@@ -235,14 +299,10 @@ class InfoTab(bpy.types.Panel):
 
 
 UsesClasses = [
-    SettingsTab,
-    BodyTweaks,
-    OutfitTweaks,
-    HairsTweaks,
-    InfoTab,
     DeleteUI,
     CreateUI,
     AutoFillGroups,
+    AddProperty,
 ]
 
 
@@ -259,4 +319,8 @@ def UsesProps():
     bpy.types.Scene.BodyGroup = bpy.props.PointerProperty(
         name="Body",
         type=bpy.types.Object,
+    )
+    bpy.types.Scene.NameProperty = bpy.props.StringProperty(
+        name="Name of Property",
+        default=""
     )
